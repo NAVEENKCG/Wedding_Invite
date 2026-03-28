@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priya & Arjun — Scroll Unrolling Animation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cinzel:wght@400;500;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9943A;
+  --cream: #FAF6EE;
+  --ivory: #FFFDF7;
+  --crimson: #8B1A1A;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #050A18; /* Dark base to make the scroll pop */
+  color: #2C1810;
+  font-family: 'Cormorant Garamond', serif;
+  overflow-x: hidden;
+}
+
+/* ─── SCROLL UNROLLING SYSTEM ─── */
+.unroll-container {
+  height: 400vh; /* Long scroll space to unroll slowly */
+  position: relative;
+}
+
+.sticky-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-image: 
+    radial-gradient(circle at center, rgba(201, 148, 58, 0.1) 0%, transparent 70%),
+    url('silk.png'); /* Using silk from previous turnaround */
+  background-size: cover;
+  background-position: center;
+}
+
+.scroll-wrapper {
+  position: relative;
+  width: min(90%, 800px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 1000px;
+}
+
+/* The physically rolled top/bottom of the scroll */
+.roll {
+  width: 100%;
+  height: 60px;
+  background: var(--ivory);
+  background-image: url('parchment_texture.png');
+  background-size: cover;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 10;
+  position: relative;
+}
+
+/* Elegant gold caps for the rolls */
+.roll::before, .roll::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  width: 25px;
+  height: 80px;
+  background: var(--gold);
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+.roll::before { left: -12px; }
+.roll::after { right: -12px; }
+
+/* The unrolling parchment body */
+.parchment-body {
+  width: 95%; /* Slightly narrower than the rolls */
+  background: var(--ivory);
+  background-image: url('parchment_texture.png');
+  background-size: cover;
+  box-shadow: 0 0 50px rgba(0,0,0,0.2) inset;
+  overflow: hidden;
+  height: 0; /* Animated height */
+  transform-origin: top;
+  position: relative;
+  border-left: 1px solid rgba(201,148,58,0.2);
+  border-right: 1px solid rgba(201,148,58,0.2);
+}
+
+/* Invitation content inside unrolled part */
+.content-inner {
+  padding: 4rem 3rem;
+  text-align: center;
+  width: 100%;
+  opacity: 0; /* Reveals as we unroll */
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 1s ease;
+}
+
+.names-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  letter-spacing: 0.1em;
+  color: var(--crimson);
+  margin-bottom: 2rem;
+}
+
+.details-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  line-height: 2;
+  color: #5C3D28;
+}
+
+/* Initial "Rolled Up" State Overlay */
+.closed-scroll-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 10, 24, 0.8);
+  transition: opacity 0.8s ease;
+}
+
+.closed-scroll-img {
+  width: min(80%, 400px);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Scroll Indication */
+.scroll-hint {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--gold);
+  font-family: 'Cinzel';
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  animation: pulse 2s infinite;
+  z-index: 5;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(10px); }
+  100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+</style>
+</head>
+<body>
+
+<div class="scroll-hint">Scroll down to unroll</div>
+
+<!-- MAIN UNROLLING SECTION -->
+<div class="unroll-container">
+  
+  <div class="sticky-viewport">
+    
+    <!-- Transition from "Closed Image" to "Animation" -->
+    <div class="closed-scroll-overlay" id="overlay">
+      <img src="closed_scroll.png" alt="Hand-rolled Invitation" class="closed-scroll-img">
+    </div>
+
+    <!-- The Animated Scroll -->
+    <div class="scroll-wrapper" id="scroll-wrapper" style="opacity: 0;">
+      
+      <!-- Top Roll Cap -->
+      <div class="roll roll-top"></div>
+      
+      <!-- The Parchment that Grows -->
+      <div class="parchment-body" id="parchment">
+        <div class="content-inner" id="content">
+          <p style="font-family: 'Cinzel'; font-size: 0.75rem; letter-spacing: 0.4em; opacity: 0.6; margin-bottom: 2rem;">🪔  INVITATION  🪔</p>
+          <h1 class="names-heading">Priya &amp; Arjun</h1>
+          <p class="details-text">
+            Born in the same city, under the same golden sun that bathes the ancient gopurams of Kanchipuram —
+          </p>
+          <p class="details-text" style="margin-top: 2rem;">
+            Together, they invite you to witness the sacred union of their families, their stars, and their souls.
+          </p>
+          <div style="margin-top: 4rem; width: 60px; height: 1px; background: var(--gold); margin-inline: auto;"></div>
+          <p style="font-family: 'Cinzel'; margin-top: 3rem; letter-spacing: 0.4em; color: var(--gold);">26 ♦ 07 ♦ 2026</p>
+          
+          <div style="padding: 10rem 0; font-size: 0.8rem; font-family: 'Cinzel'; opacity: 0.4;">
+            Scroll leads to the full celebration...
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Roll Cap (Moves Down) -->
+      <div class="roll roll-bottom" id="bottom-roll"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- The rest of the page would follow -->
+<div style="height: 100vh; background: var(--cream); display: flex; align-items: center; justify-content: center; position: relative; z-index: 1000;">
+  <h2 style="font-size: 3rem; color: var(--crimson);">The story continues below...</h2>
+</div>
+
+<script>
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const vh = window.innerHeight;
+  const scrollLimit = vh * 3; // The total height of the unroll-container minus 1vh
+  
+  const progress = Math.min(scrollY / scrollLimit, 1);
+  
+  const overlay = document.getElementById('overlay');
+  const scrollWrapper = document.getElementById('scroll-wrapper');
+  const parchment = document.getElementById('parchment');
+  const bottomRoll = document.getElementById('bottom-roll');
+  const content = document.getElementById('content');
+
+  // 1. Initial Reveal (0 - 20%)
+  if (progress < 0.2) {
+    const subP = progress / 0.2;
+    overlay.style.opacity = 1 - subP;
+    scrollWrapper.style.opacity = subP;
+  } else {
+    overlay.style.opacity = 0;
+    scrollWrapper.style.opacity = 1;
+  }
+
+  // 2. Unrolling (20 - 80%)
+  if (progress > 0.2 && progress < 0.8) {
+    const unrollP = (progress - 0.2) / 0.6;
+    const maxHeight = 800; // Target unrolled height
+    
+    parchment.style.height = (unrollP * maxHeight) + 'px';
+    content.style.opacity = Math.max(0, (unrollP - 0.5) * 2);
+    content.style.transform = `translateY(${20 - unrollP * 20}px)`;
+  } else if (progress >= 0.8) {
+    parchment.style.height = '800px';
+    content.style.opacity = 1;
+    content.style.transform = 'translateY(0)';
+  } else {
+    parchment.style.height = '0';
+    content.style.opacity = 0;
+  }
+});
+</script>
+</body>
+</html>
