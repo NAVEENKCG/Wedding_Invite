@@ -1,266 +1,246 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Priya & Arjun — Scroll Unrolling Animation</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cinzel:wght@400;500;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
-<style>
-:root {
-  --gold: #C9943A;
-  --cream: #FAF6EE;
-  --ivory: #FFFDF7;
-  --crimson: #8B1A1A;
-}
+    <style>
+        :root {
+            --gold-light: #F9DFA5;
+            --gold-mid: #D4AF37;
+            --gold-dark: #997A15;
+            --parchment: #F4EAE0;
+            --crimson: #8E1600;
+            --bg-deep: #05070A;
+            --scroll-h: 70vh; 
+        }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            margin: 0; padding: 0; background: var(--bg-deep);
+            font-family: 'Cormorant Garamond', serif; overflow-x: hidden;
+            color: #2A1F1D;
+        }
 
-body {
-  background: #050A18; /* Dark base to make the scroll pop */
-  color: #2C1810;
-  font-family: 'Cormorant Garamond', serif;
-  overflow-x: hidden;
-}
+        /* ─── AMBIENT BACKGROUND ─── */
+        .ambient-glow {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80vw; height: 80vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 70%);
+            filter: blur(60px); z-index: 0; pointer-events: none;
+            will-change: transform;
+        }
 
-/* ─── SCROLL UNROLLING SYSTEM ─── */
-.unroll-container {
-  height: 400vh; /* Long scroll space to unroll slowly */
-  position: relative;
-}
+        .unroll-container { height: 400vh; position: relative; z-index: 1; }
+        
+        .sticky-viewport {
+            position: sticky; top: 0; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-.sticky-viewport {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-image: 
-    radial-gradient(circle at center, rgba(201, 148, 58, 0.1) 0%, transparent 70%),
-    url('silk.png'); /* Using silk from previous turnaround */
-  background-size: cover;
-  background-position: center;
-}
+        .scroll-wrapper {
+            position: relative; width: min(85%, 700px);
+            display: flex; flex-direction: column; align-items: center;
+            filter: drop-shadow(0 30px 60px rgba(0,0,0,0.9));
+        }
 
-.scroll-wrapper {
-  position: relative;
-  width: min(90%, 800px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  perspective: 1000px;
-}
+        /* ─── 3D METALLIC ROLLS ─── */
+        .roll {
+            width: 100%; height: 50px; border-radius: 8px; z-index: 10;
+            background: linear-gradient(180deg, var(--gold-dark) 0%, var(--gold-light) 40%, var(--gold-mid) 60%, #4A3A00 100%);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), 0 10px 25px rgba(0,0,0,0.7);
+            position: relative;
+        }
 
-/* The physically rolled top/bottom of the scroll */
-.roll {
-  width: 100%;
-  height: 60px;
-  background: var(--ivory);
-  background-image: url('parchment_texture.png');
-  background-size: cover;
-  border-radius: 4px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  z-index: 10;
-  position: relative;
-}
+        .roll::before, .roll::after {
+            content: ''; position: absolute; top: -6px; width: 18px; height: 62px;
+            background: linear-gradient(90deg, #3A2A00 0%, var(--gold-light) 50%, #3A2A00 100%);
+            border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+        .roll::before { left: -9px; } .roll::after { right: -9px; }
 
-/* Elegant gold caps for the rolls */
-.roll::before, .roll::after {
-  content: '';
-  position: absolute;
-  top: -10px;
-  width: 25px;
-  height: 80px;
-  background: var(--gold);
-  border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-}
-.roll::before { left: -12px; }
-.roll::after { right: -12px; }
+        .roll-bottom { position: absolute; top: 0; will-change: transform; }
 
-/* The unrolling parchment body */
-.parchment-body {
-  width: 95%; /* Slightly narrower than the rolls */
-  background: var(--ivory);
-  background-image: url('parchment_texture.png');
-  background-size: cover;
-  box-shadow: 0 0 50px rgba(0,0,0,0.2) inset;
-  overflow: hidden;
-  height: 0; /* Animated height */
-  transform-origin: top;
-  position: relative;
-  border-left: 1px solid rgba(201,148,58,0.2);
-  border-right: 1px solid rgba(201,148,58,0.2);
-}
+        /* ─── WAX SEAL BREAK ─── */
+        .wax-seal {
+            position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+            width: 65px; height: 65px; z-index: 20;
+            background: radial-gradient(circle at 30% 30%, #D32F2F, var(--crimson) 70%, #4A0000);
+            border-radius: 50%;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.6), 0 10px 20px rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif; color: var(--gold-light); font-size: 1.6rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9); border: 2.5px solid #A02020;
+            transition: transform 0.8s cubic-bezier(0.8, 0, 0.2, 1), opacity 0.6s ease;
+        }
 
-/* Invitation content inside unrolled part */
-.content-inner {
-  padding: 4rem 3rem;
-  text-align: center;
-  width: 100%;
-  opacity: 0; /* Reveals as we unroll */
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 1s ease;
-}
+        .wax-seal.break {
+            transform: translateX(-50%) scale(1.4) rotate(25deg);
+            opacity: 0;
+            pointer-events: none;
+        }
 
-.names-heading {
-  font-family: 'Cinzel', serif;
-  font-size: 3rem;
-  letter-spacing: 0.1em;
-  color: var(--crimson);
-  margin-bottom: 2rem;
-}
+        /* ─── PARCHMENT TEXTURE ─── */
+        .parchment-body {
+            width: 94%; height: var(--scroll-h);
+            background: linear-gradient(135deg, #FFFDF8 0%, var(--parchment) 50%, #E8D5B7 100%);
+            box-shadow: inset 0 0 80px rgba(142, 22, 0, 0.1);
+            transform-origin: top; transform: scaleY(0); overflow: hidden;
+            border-left: 2px solid rgba(212, 175, 55, 0.4); border-right: 2px solid rgba(212, 175, 55, 0.4);
+            will-change: transform;
+        }
 
-.details-text {
-  font-family: 'IM Fell English', serif;
-  font-style: italic;
-  font-size: 1.5rem;
-  line-height: 2;
-  color: #5C3D28;
-}
+        /* ─── PREMIUM TYPOGRAPHY ─── */
+        .content-inner {
+            padding: 5rem 2.5rem; text-align: center;
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 1.2s cubic-bezier(0.2, 1, 0.3, 1), transform 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .content-inner.is-visible { opacity: 1; transform: translateY(0); }
 
-/* Initial "Rolled Up" State Overlay */
-.closed-scroll-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(5, 10, 24, 0.8);
-  transition: opacity 0.8s ease;
-}
+        .subtitle { font-family: 'Cinzel', serif; letter-spacing: 0.5em; font-size: 0.85rem; color: var(--gold-dark); margin-bottom: 1.5rem; text-transform: uppercase; }
+        
+        .names { font-family: 'Cinzel', serif; font-size: clamp(2.5rem, 6vw, 4.5rem); color: var(--crimson); margin: 0; }
+        .names span { display: inline-block; opacity: 0; transform: translateY(30px); }
+        .names.is-visible span { animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-.closed-scroll-img {
-  width: min(80%, 400px);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-  animation: float 4s ease-in-out infinite;
-}
+        @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
-/* Scroll Indication */
-.scroll-hint {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--gold);
-  font-family: 'Cinzel';
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  animation: pulse 2s infinite;
-  z-index: 5;
-}
+        .prose { font-size: 1.6rem; font-style: italic; line-height: 1.9; margin: 2.5rem auto; max-width: 85%; color: #4A3B32; font-family: 'Cormorant Garamond', serif; }
+        .divider { width: 60px; height: 2px; background: var(--gold-mid); margin: 2.5rem auto; opacity: 0.6; }
+        
+        .scroll-hint {
+            position: fixed; bottom: 50px; width: 100%; text-align: center;
+            color: var(--gold-mid); font-family: 'Cinzel'; letter-spacing: 0.4em; font-size: 0.8rem;
+            animation: bounce 2s infinite; pointer-events: none; z-index: 10;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(12px); opacity: 1; } }
 
-@keyframes pulse {
-  0% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
-  50% { opacity: 1; transform: translateX(-50%) translateY(10px); }
-  100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-</style>
+        /* ─── GOLDEN SPARKLES ─── */
+        .sparkle {
+            position: fixed; width: 4px; height: 4px; border-radius: 50%;
+            background: radial-gradient(circle, #FFE47A, #C9943A, transparent);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            pointer-events: none; z-index: 9999;
+            animation: float-sparkle 5s linear forwards;
+        }
+        @keyframes float-sparkle {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-300px) rotate(360deg) scale(0); opacity: 0; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="scroll-hint">Scroll down to unroll</div>
+<div class="ambient-glow" id="glow"></div>
+<div class="scroll-hint">SCROLL TO UNROLL</div>
 
-<!-- MAIN UNROLLING SECTION -->
-<div class="unroll-container">
-  
-  <div class="sticky-viewport">
-    
-    <!-- Transition from "Closed Image" to "Animation" -->
-    <div class="closed-scroll-overlay" id="overlay">
-      <img src="closed_scroll.png" alt="Hand-rolled Invitation" class="closed-scroll-img">
-    </div>
+<div class="unroll-container" id="trigger">
+    <div class="sticky-viewport">
+        <div class="scroll-wrapper">
+            
+            <div class="roll roll-top">
+                <div class="wax-seal" id="seal">P&A</div>
+            </div>
+            
+            <div class="parchment-body" id="parchment">
+                <div class="content-inner" id="content">
+                    <div class="subtitle">JOYFULLY INVITE YOU</div>
+                    <h1 class="names" id="names">Priya & Arjun</h1>
+                    <div class="prose">
+                        "Two stars aligning in the vast midnight sky, forging a promise of forever."
+                    </div>
+                    <div class="divider"></div>
+                    <div class="subtitle" style="color: var(--crimson); font-weight: 700;">JULY 26, 2026</div>
+                    <div class="subtitle">THE GRAND PALACE, KANCHIPURAM</div>
+                </div>
+            </div>
 
-    <!-- The Animated Scroll -->
-    <div class="scroll-wrapper" id="scroll-wrapper" style="opacity: 0;">
-      
-      <!-- Top Roll Cap -->
-      <div class="roll roll-top"></div>
-      
-      <!-- The Parchment that Grows -->
-      <div class="parchment-body" id="parchment">
-        <div class="content-inner" id="content">
-          <p style="font-family: 'Cinzel'; font-size: 0.75rem; letter-spacing: 0.4em; opacity: 0.6; margin-bottom: 2rem;">🪔  INVITATION  🪔</p>
-          <h1 class="names-heading">Priya &amp; Arjun</h1>
-          <p class="details-text">
-            Born in the same city, under the same golden sun that bathes the ancient gopurams of Kanchipuram —
-          </p>
-          <p class="details-text" style="margin-top: 2rem;">
-            Together, they invite you to witness the sacred union of their families, their stars, and their souls.
-          </p>
-          <div style="margin-top: 4rem; width: 60px; height: 1px; background: var(--gold); margin-inline: auto;"></div>
-          <p style="font-family: 'Cinzel'; margin-top: 3rem; letter-spacing: 0.4em; color: var(--gold);">26 ♦ 07 ♦ 2026</p>
-          
-          <div style="padding: 10rem 0; font-size: 0.8rem; font-family: 'Cinzel'; opacity: 0.4;">
-            Scroll leads to the full celebration...
-          </div>
+            <div class="roll roll-bottom" id="bottom-roll"></div>
+
         </div>
-      </div>
-      
-      <!-- Bottom Roll Cap (Moves Down) -->
-      <div class="roll roll-bottom" id="bottom-roll"></div>
-
     </div>
-
-  </div>
-
-</div>
-
-<!-- The rest of the page would follow -->
-<div style="height: 100vh; background: var(--cream); display: flex; align-items: center; justify-content: center; position: relative; z-index: 1000;">
-  <h2 style="font-size: 3rem; color: var(--crimson);">The story continues below...</h2>
 </div>
 
 <script>
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  const vh = window.innerHeight;
-  const scrollLimit = vh * 3; // The total height of the unroll-container minus 1vh
-  
-  const progress = Math.min(scrollY / scrollLimit, 1);
-  
-  const overlay = document.getElementById('overlay');
-  const scrollWrapper = document.getElementById('scroll-wrapper');
-  const parchment = document.getElementById('parchment');
-  const bottomRoll = document.getElementById('bottom-roll');
-  const content = document.getElementById('content');
+    const trigger = document.getElementById('trigger');
+    const parchment = document.getElementById('parchment');
+    const bottomRoll = document.getElementById('bottom-roll');
+    const content = document.getElementById('content');
+    const seal = document.getElementById('seal');
+    const glow = document.getElementById('glow');
+    const names = document.getElementById('names');
 
-  // 1. Initial Reveal (0 - 20%)
-  if (progress < 0.2) {
-    const subP = progress / 0.2;
-    overlay.style.opacity = 1 - subP;
-    scrollWrapper.style.opacity = subP;
-  } else {
-    overlay.style.opacity = 0;
-    scrollWrapper.style.opacity = 1;
-  }
+    // ─── 1. CHARACTER-LEVEL TYPOGRAPHY ───
+    names.innerHTML = names.textContent.split("")
+        .map((letter, i) => `<span style="animation-delay:${i * 0.05}s">${letter === " " ? "&nbsp;" : letter}</span>`)
+        .join("");
 
-  // 2. Unrolling (20 - 80%)
-  if (progress > 0.2 && progress < 0.8) {
-    const unrollP = (progress - 0.2) / 0.6;
-    const maxHeight = 800; // Target unrolled height
-    
-    parchment.style.height = (unrollP * maxHeight) + 'px';
-    content.style.opacity = Math.max(0, (unrollP - 0.5) * 2);
-    content.style.transform = `translateY(${20 - unrollP * 20}px)`;
-  } else if (progress >= 0.8) {
-    parchment.style.height = '800px';
-    content.style.opacity = 1;
-    content.style.transform = 'translateY(0)';
-  } else {
-    parchment.style.height = '0';
-    content.style.opacity = 0;
-  }
-});
+    // ─── 2. SMOOTH SCROLL PHYSICS (Apple Feel) ───
+    let currentScroll = 0;
+    let targetScroll = 0;
+
+    window.addEventListener("scroll", () => {
+        targetScroll = window.scrollY;
+    });
+
+    function smoothScroll() {
+        // Linear interpolation for buttery smoothness
+        currentScroll += (targetScroll - currentScroll) * 0.08;
+
+        const vh = window.innerHeight;
+        const scrollHeight = vh * 0.7; // Matches CSS --scroll-h (70vh)
+        const rect = trigger.getBoundingClientRect();
+        const scrollRange = trigger.offsetHeight - vh;
+
+        // Calculate progress based on smooth currentScroll
+        let progress = Math.max(0, Math.min(1, currentScroll / scrollRange));
+        
+        // Easing curve for unrolling feel
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+
+        parchment.style.transform = `scaleY(${easeProgress})`;
+        bottomRoll.style.transform = `translateY(${easeProgress * scrollHeight}px)`;
+
+        // ─── 3. WAX SEAL BREAK ───
+        if (progress > 0.05) {
+            seal.classList.add("break");
+        } else {
+            seal.classList.remove("break");
+        }
+
+        // ─── 4. CINEMATIC CONTENT REVEAL ───
+        if (progress > 0.6) {
+            content.classList.add('is-visible');
+            names.classList.add('is-visible');
+        } else {
+            content.classList.remove('is-visible');
+            names.classList.remove('is-visible');
+        }
+
+        // ─── 5. PARALLAX DEPTH ───
+        glow.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.3})`;
+        glow.style.opacity = 0.6 + progress * 0.4;
+
+        requestAnimationFrame(smoothScroll);
+    }
+
+    smoothScroll();
+
+    // ─── 6. GOLDEN PARTICLE GLOW SPAWNER ───
+    setInterval(() => {
+        if (targetScroll < trigger.offsetHeight) {
+            const sparkle = document.createElement("div");
+            sparkle.className = "sparkle";
+            sparkle.style.left = Math.random() * window.innerWidth + "px";
+            sparkle.style.top = window.innerHeight + "px";
+            document.body.appendChild(sparkle);
+
+            // Clean up to prevent memory leaks
+            setTimeout(() => sparkle.remove(), 5000);
+        }
+    }, 250);
+
+    // ─── 7. HAPTIC FEEL (Optional scale) ───
+    window.addEventListener('mousedown', () => {
+        document.body.style.transform = 'scale(0.995)';
+    });
+    window.addEventListener('mouseup', () => {
+        document.body.style.transform = 'scale(1)';
+    });
 </script>
 </body>
 </html>
