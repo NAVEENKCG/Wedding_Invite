@@ -19,7 +19,6 @@
             --gold: #C9943A;
             --ivory: #FFFDF7;
             --text-dark: #2C1810;
-            --text-muted: #8B6B4A;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,17 +28,18 @@
             color: var(--text-dark);
             font-family: 'Cormorant Garamond', serif;
             overflow-x: hidden;
+            transition: transform 0.1s ease-out; /* For haptic feel */
         }
 
         /* ─── AMBIENT BACKGROUND & MESH ─── */
         .page-bg {
             position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05070a 100%);
+            background: radial-gradient(circle at 50% 50%, #0d1526 0%, #050A18 100%);
         }
         .ambient-glow {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80vw; height: 80vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
             filter: blur(80px); z-index: -1; pointer-events: none;
             will-change: transform;
         }
@@ -55,8 +55,8 @@
         .kolam-canvas { width: 200px; height: 200px; margin-bottom: 2rem; }
         .loader-text { font-family: 'Cinzel'; color: var(--gold-light); letter-spacing: 0.4em; font-size: 0.8rem; text-transform: uppercase; }
 
-        /* ─── SCROLL UNROLLING HERO ─── */
-        .unroll-container { height: 400vh; position: relative; z-index: 10; }
+        /* ─── SCROLL UNROLLING HERO (THE UNROLLER) ─── */
+        .unroll-container { height: 450vh; position: relative; z-index: 10; }
         
         .sticky-viewport {
             position: sticky; top: 0; height: 100vh;
@@ -67,7 +67,7 @@
         .scroll-wrapper {
             position: relative; width: min(85%, 700px);
             display: flex; flex-direction: column; align-items: center;
-            filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
+            filter: drop-shadow(0 40px 80px rgba(0,0,0,0.95));
         }
 
         .roll {
@@ -85,6 +85,7 @@
 
         .roll-bottom { position: absolute; top: 0; will-change: transform; }
 
+        /* ─── WAX SEAL BREAK ─── */
         .wax-seal {
             position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
             width: 68px; height: 68px; z-index: 30;
@@ -93,10 +94,11 @@
             display: flex; align-items: center; justify-content: center;
             font-family: 'Cinzel'; color: var(--gold-light); font-size: 1.6rem;
             text-shadow: 0 1px 4px rgba(0,0,0,1); border: 2.5px solid #A02020;
-            transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1), opacity 0.8s ease;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s ease;
         }
         .wax-seal.break { transform: translateX(-50%) scale(1.6) rotate(35deg); opacity: 0; pointer-events: none; }
 
+        /* ─── PARCHMENT BODY ─── */
         .parchment-body {
             width: 94%; height: var(--scroll-h);
             background: linear-gradient(135deg, #FFFDF8 0%, var(--parchment) 50%, #E8D5B7 100%);
@@ -116,12 +118,14 @@
         .content-inner.is-visible { opacity: 1; transform: translateY(0); }
 
         .subtitle { font-family: 'Cinzel'; letter-spacing: 0.5em; font-size: 0.85rem; color: var(--gold-dark); margin-bottom: 2rem; text-transform: uppercase; }
+        
+        /* ─── PREMIUM TYPOGRAPHY ─── */
         .names { font-family: 'Cinzel'; font-size: clamp(2.5rem, 6vw, 4.8rem); color: var(--crimson); margin: 0; }
-        .names span { display: inline-block; opacity: 0; transform: translateY(40px); }
+        .names span { display: inline-block; opacity: 0; transform: translateY(30px); }
         .names.is-visible span { animation: rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
-        .prose { font-size: 1.7rem; font-style: italic; line-height: 2; margin: 3rem auto; max-width: 85%; color: #4A3B32; }
+        .prose { font-size: 1.7rem; font-style: italic; line-height: 2; margin: 3rem auto; max-width: 85%; color: #4A3B32; font-family: 'Cormorant Garamond'; }
         
         .scroll-hint {
             position: fixed; bottom: 50px; width: 100%; text-align: center;
@@ -130,7 +134,19 @@
         }
         @keyframes bounce { 0%, 100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(15px); opacity: 1; } }
 
-        /* ─── MAIN CONTENT SECTIONS ─── */
+        /* ─── GOLDEN SPARKLES ─── */
+        .sparkle {
+            position: fixed; width: 4px; height: 4px; border-radius: 50%;
+            background: radial-gradient(circle, #FFD700, transparent);
+            pointer-events: none; z-index: 9999;
+            animation: sparkle-float 6s linear forwards;
+        }
+        @keyframes sparkle-float {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-300px) scale(0); opacity: 0; }
+        }
+
+        /* ─── MAIN WEBSITE CONTENT ─── */
         main { position: relative; z-index: 20; background: var(--bg-deep); }
         
         section { padding: 10rem 2rem; position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden; }
@@ -138,75 +154,66 @@
         .section-eyebrow { font-family: 'Cinzel'; font-size: 0.75rem; color: var(--gold); letter-spacing: 0.5em; text-transform: uppercase; margin-bottom: 1rem; opacity: 0.7; }
         .section-heading { font-family: 'Cormorant Garamond'; font-weight: 300; font-size: clamp(2.5rem, 6vw, 4.5rem); color: var(--gold-light); line-height: 1.1; }
 
-        /* ─── SPARKLE SYSTEM ─── */
-        .sparkle {
-            position: fixed; width: 3px; height: 3px; border-radius: 50%;
-            background: white; box-shadow: 0 0 8px #FFD700;
-            pointer-events: none; z-index: 9999;
-            animation: float-sparkle 6s linear forwards;
-        }
-        @keyframes float-sparkle {
-            0% { transform: translateY(0) scale(1); opacity: 0.8; }
-            100% { transform: translateY(-500px) scale(0); opacity: 0; }
-        }
-
-        /* ─── EVENTS GRID ─── */
-        .events-grid { margin-top: 5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; max-width: 1200px; width: 100%; }
+        .event-grid { margin-top: 5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; max-width: 1200px; width: 100%; }
+        
         /* Glass Card Pattern */
-        .event-card {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        .glass-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
             backdrop-filter: blur(12px); border-radius: 20px; padding: 3.5rem 2.5rem;
             text-align: left; transition: all 0.5s ease;
             position: relative; overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
         }
-        .event-card:hover { transform: translateY(-12px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
-        .event-card::before {
+        .glass-card:hover { transform: translateY(-12px); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); }
+        .glass-card::before {
             content: ''; position: absolute; inset: 0; pointer-events: none;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.1) 0%, transparent 60%);
+            background: radial-gradient(200px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent);
         }
 
-        /* ─── RSVP FORM ─── */
-        .rsvp-form { max-width: 600px; width: 100%; margin-top: 4rem; display: grid; gap: 1.5rem; }
-        .rsvp-input {
+        /* RSVP */
+        form { max-width: 600px; width: 100%; margin-top: 4rem; display: grid; gap: 1.5rem; }
+        input, select {
             width: 100%; padding: 1.25rem 1.5rem; border-radius: 12px;
             background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
             color: white; font-family: 'Cormorant Garamond'; font-size: 1.25rem; outline: none;
         }
-        .rsvp-btn {
+        button {
             padding: 1.25rem; border-radius: 12px; background: var(--gold);
             color: var(--crimson-deep); font-family: 'Cinzel'; font-weight: bold;
             letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border: none;
             transition: transform 0.3s;
         }
-        .rsvp-btn:active { transform: scale(0.96); }
+        button:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
 
 <div id="loader">
     <canvas class="kolam-canvas" id="kolam-canvas"></canvas>
-    <div class="loader-text">Invoking the Sacred Stars...</div>
+    <div class="loader-text">Summoning the Royal Ancestors...</div>
 </div>
 
 <div class="page-bg"></div>
 <div class="ambient-glow" id="glow"></div>
-<div class="scroll-hint" id="scroller-hint">SCROLL TO UNROLL THE ROYAL PROMISE</div>
+<div class="scroll-hint" id="scroller-hint">SCROLL TO BEGIN THE PERFORMANCE</div>
 
-<!-- UNROLLING SCENE -->
+<!-- 🎬 THE ROYAL SCROLL UNROLL (UPGRADED) -->
 <div class="unroll-container" id="unroll-trigger">
     <div class="sticky-viewport">
         <div class="scroll-wrapper">
             <div class="roll roll-top">
+                <!-- 🎯 WAX SEAL BREAK -->
                 <div class="wax-seal" id="seal">P&A</div>
             </div>
             <div class="parchment-body" id="parchment">
                 <div class="content-inner" id="content">
                     <div class="subtitle">JOYFULLY INVITE YOU</div>
+                    <!-- 🎨 PREMIUM TYPOGRAPHY -->
                     <h1 class="names" id="names">Priya & Arjun</h1>
                     <div class="prose">
-                        "Born in the same city, under the same golden sun that bathes the ancient gopurams of Kanchipuram — two souls align."
+                        "In the sacred city of silk and gold, two souls bind their destinies forever."
                     </div>
-                    <div class="divider"></div>
+                    <div style="width: 60px; height: 1px; background: var(--gold); margin: 3rem auto; opacity: 0.5;"></div>
                     <div class="subtitle" style="color: var(--crimson); font-weight: 700;">JULY 26, 2026</div>
                     <div class="subtitle">THE GRAND PALACE, KANCHIPURAM</div>
                 </div>
@@ -218,75 +225,67 @@
 
 <main id="main-content">
     <section>
-        <div class="section-eyebrow">Our Sacred Union</div>
-        <h2 class="section-heading">The Journey of Two Souls</h2>
-        <p class="prose" style="color: var(--gold-light); opacity: 0.7;">
-            We invite you to be a part of our beginning. A celebration of love, culture, and timeless tradition.
-        </p>
-    </section>
-
-    <section id="events">
-        <div class="section-eyebrow">The Celebrations</div>
-        <h2 class="section-heading">The Royal Timeline</h2>
-        <div class="events-grid">
-            <div class="event-card">
-                <div class="subtitle" style="color: var(--gold); margin-bottom: 0.5rem;">Sangeet</div>
-                <h3 style="color: white; font-size: 2rem; margin-bottom: 1rem;">The Moonlight Rythm</h3>
-                <p style="color: rgba(255,255,255,0.6); line-height: 1.6;">Join us for a night of music and dance under the velvet sky of Kanchipuram.</p>
-                <div style="margin-top: 2rem; color: var(--gold-light); font-family: 'Cinzel'; font-size: 0.8rem;">JULY 25 • 6:30 PM</div>
+        <div class="section-eyebrow">The Gathering</div>
+        <h2 class="section-heading">Sacred Ceremonies</h2>
+        <div class="event-grid">
+            <div class="glass-card">
+                <div class="subtitle" style="color: var(--gold); margin-bottom: 0.5rem;">The Muhurtham</div>
+                <h3 style="color: white; font-size: 2.2rem; margin-bottom: 1.5rem;">Divine Union</h3>
+                <p style="color: rgba(255,255,255,0.6); line-height: 1.8; font-size: 1.1rem; font-style: italic;">
+                    Witness the Vedic rituals that bind two souls under the blessing of the divine flame.
+                </p>
+                <div style="margin-top: 2.5rem; color: var(--gold-light); font-family: 'Cinzel'; font-size: 0.85rem;">9:30 AM — MAIN HALL</div>
             </div>
-            <div class="event-card">
-                <div class="subtitle" style="color: var(--gold); margin-bottom: 0.5rem;">The Wedding</div>
-                <h3 style="color: white; font-size: 2rem; margin-bottom: 1rem;">Vedic Muhurtham</h3>
-                <p style="color: rgba(255,255,255,0.6); line-height: 1.6;">The sacred fire, the silk drapes, and the promise of a lifetime.</p>
-                <div style="margin-top: 2rem; color: var(--gold-light); font-family: 'Cinzel'; font-size: 0.8rem;">JULY 26 • 9:30 AM</div>
+            <div class="glass-card">
+                <div class="subtitle" style="color: var(--gold); margin-bottom: 0.5rem;">Celebration</div>
+                <h3 style="color: white; font-size: 2.2rem; margin-bottom: 1.5rem;">The Grand Feast</h3>
+                <p style="color: rgba(255,255,255,0.6); line-height: 1.8; font-size: 1.1rem; font-style: italic;">
+                    A traditional South Indian banquet served on fresh banana leaves with flavors from the roots.
+                </p>
+                <div style="margin-top: 2.5rem; color: var(--gold-light); font-family: 'Cinzel'; font-size: 0.85rem;">12:30 PM — FEASTING LOBBY</div>
             </div>
         </div>
     </section>
 
     <section id="rsvp">
-        <div class="section-eyebrow">Witness Our Promise</div>
-        <h2 class="section-heading">Will You Join Us?</h2>
-        <form class="rsvp-form">
-            <input type="text" class="rsvp-input" placeholder="Your Full Name">
-            <input type="email" class="rsvp-input" placeholder="Your Email Address">
-            <select class="rsvp-input">
-                <option value="1">1 Guest</option>
-                <option value="2">2 Guests</option>
-                <option value="3">Family</option>
+        <div class="section-eyebrow">RSVP</div>
+        <h2 class="section-heading">Honor Us with Your Presence</h2>
+        <form id="rsvp-form">
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Email Address" required>
+            <select>
+                <option value="1">1 Person</option>
+                <option value="2">2 Persons</option>
+                <option value="family">Family</option>
             </select>
-            <button class="rsvp-btn">Confirm Presence</button>
+            <button type="submit">Send Blessing</button>
         </form>
     </section>
 
-    <footer style="padding: 10rem 2rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
-        <div class="subtitle" style="font-size: 0.7rem;">WITH LOVE</div>
-        <h2 style="font-family: 'Cinzel'; color: var(--gold-light); font-size: 2rem; letter-spacing: 0.2em;">PRIYA & ARJUN</h2>
-        <p style="margin-top: 2rem; opacity: 0.4; color: white; font-size: 0.8rem;">NAMMA OORU • NAMMA KALYANAM</p>
+    <footer style="padding: 10rem 2rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center;">
+        <h2 style="font-family: 'Cinzel'; color: var(--gold-light); font-size: 2.5rem; letter-spacing: 0.3em;">P & A</h2>
+        <p style="margin-top: 2rem; opacity: 0.4; color: white; font-size: 0.9rem; letter-spacing: 0.2em;">KANCHIPURAM • 2026</p>
     </footer>
 </main>
 
 <script>
-    // ─── 1. LOADER LOGIC ───
+    // ─── 1. LOADER ───
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.getElementById('loader').classList.add('fade-out');
-        }, 1500);
+        setTimeout(() => document.getElementById('loader').classList.add('fade-out'), 1500);
         initKolam();
     });
 
     function initKolam() {
-        const canvas = document.getElementById('kolam-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 400; canvas.height = 400;
+        const c = document.getElementById('kolam-canvas');
+        const ctx = c.getContext('2d');
+        c.width = 400; c.height = 400;
         let p = 0;
         function draw() {
-            ctx.clearRect(0, 0, 400, 400);
-            ctx.strokeStyle = '#D4AF37'; ctx.lineWidth = 1.5;
+            ctx.clearRect(0,0,400,400); ctx.strokeStyle = '#D4AF37'; ctx.lineWidth = 2;
             ctx.beginPath();
-            for(let i=0; i<8; i++) {
-                ctx.save(); ctx.translate(200, 200); ctx.rotate(i * Math.PI / 4);
-                ctx.moveTo(0, 0); ctx.bezierCurveTo(40, -40, 80, -40, 100 * Math.sin(p), 0);
+            for(let i=0; i<8; i++){
+                ctx.save(); ctx.translate(200,200); ctx.rotate(i*Math.PI/4);
+                ctx.moveTo(0,0); ctx.bezierCurveTo(40,-40,80,-40,120*Math.sin(p),0);
                 ctx.stroke(); ctx.restore();
             }
             p += 0.02; requestAnimationFrame(draw);
@@ -294,7 +293,7 @@
         draw();
     }
 
-    // ─── 2. TARGET VARIABLES ───
+    // ─── 2. DOM ELEMENTS ───
     const trigger = document.getElementById('unroll-trigger');
     const parchment = document.getElementById('parchment');
     const bottomRoll = document.getElementById('bottom-roll');
@@ -304,39 +303,39 @@
     const names = document.getElementById('names');
     const hint = document.getElementById('scroller-hint');
 
-    // ─── 3. TYPOGRAPHY SPLIT ───
-    names.innerHTML = names.textContent.split("")
-        .map((l, i) => `<span style="animation-delay:${i * 0.05}s">${l === " " ? "&nbsp;" : l}</span>`)
-        .join("");
+    // ─── 🎨 PREMIUM TYPOGRAPHY ───
+    names.innerHTML = names.textContent.split("").map((l, i) => 
+        `<span style="animation-delay:${i * 0.05}s">${l === " " ? "&nbsp;" : l}</span>`
+    ).join("");
 
-    // ─── 4. SMOOTH SCROLL PHYSICS (Apple Feel) ───
-    let currentScroll = 0;
-    let targetScroll = 0;
+    // ─── 🧠 SMART ANIMATION PHYSICS (Apple-level) ───
+    let current = 0;
+    let target = 0;
 
     window.addEventListener("scroll", () => {
-        targetScroll = window.scrollY;
+        target = window.scrollY;
     });
 
-    function update() {
-        // Linear Interpolation for buttery physics
-        currentScroll += (targetScroll - currentScroll) * 0.08;
+    function smoothScroll() {
+        // Smooth factor 0.08 for immersive inertial feel
+        current += (target - current) * 0.08;
 
         const vh = window.innerHeight;
         const scrollRange = trigger.offsetHeight - vh;
-        const p = Math.max(0, Math.min(1, currentScroll / scrollRange));
+        const p = Math.max(0, Math.min(1, current / scrollRange));
         
-        // Easing curve (easeOutCubic)
+        // 🧠 easeOutCubic (Apple math)
         const ep = 1 - Math.pow(1 - p, 3);
-        const scrollHeight = vh * 0.7;
+        const sh = vh * 0.7; // Parchment max height 70vh
 
         parchment.style.transform = `scaleY(${ep})`;
-        bottomRoll.style.transform = `translateY(${ep * scrollHeight}px)`;
+        bottomRoll.style.transform = `translateY(${ep * sh}px)`;
 
-        // Wax Seal Break
+        // 🎯 WAX SEAL BREAK
         if (p > 0.05) { seal.classList.add("break"); hint.style.opacity = 0; }
         else { seal.classList.remove("break"); hint.style.opacity = 1; }
 
-        // Content Visibility
+        // 🎬 CINEMATIC REVEAL
         if (p > 0.6) {
             content.classList.add('is-visible');
             names.classList.add('is-visible');
@@ -345,34 +344,41 @@
             names.classList.remove('is-visible');
         }
 
-        // Parallax depth
+        // ✨ PARALLAX GLOW
         glow.style.transform = `translate(-50%, -50%) scale(${1 + p * 0.3})`;
         glow.style.opacity = 0.5 + p * 0.5;
 
-        requestAnimationFrame(update);
+        // 🔊 AUDIO LOGIC (Placeholder if user adds asset)
+        // if (p > 0.15 && !window.audioTriggered) { playOpeningSound(); }
+
+        requestAnimationFrame(smoothScroll);
     }
-    update();
+    smoothScroll();
 
-    // ─── 5. SPARKLE SPAWNER ───
+    // ✨ GOLDEN SPAWNER
     setInterval(() => {
-        if (targetScroll < trigger.offsetHeight + 1000) {
-            const sp = document.createElement("div");
-            sp.className = "sparkle";
-            sp.style.left = Math.random() * window.innerWidth + "px";
-            sp.style.top = window.innerHeight + "px";
-            document.body.appendChild(sp);
-            setTimeout(() => sp.remove(), 6000);
+        if (target < trigger.offsetHeight + 1000) {
+            const s = document.createElement("div"); s.className = "sparkle";
+            s.style.left = Math.random() * window.innerWidth + "px";
+            s.style.top = window.innerHeight + "px";
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 6000);
         }
-    }, 200);
+    }, 250);
 
-    // ─── 6. MOUSE TRACKING GLOW ───
-    document.querySelectorAll('.event-card').forEach(card => {
+    // 🎯 GLASS MOUSE TRACKING
+    document.querySelectorAll('.glass-card').forEach(card => {
         card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-            card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
+            card.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
         });
     });
+
+    // 🧠 HAPTIC INTERACTION
+    window.addEventListener('mousedown', () => document.body.style.transform = 'scale(0.998)');
+    window.addEventListener('mouseup', () => document.body.style.transform = 'scale(1)');
+
 </script>
 </body>
 </html>
